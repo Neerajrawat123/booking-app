@@ -1,25 +1,39 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { Link,useNavigate } from 'react-router-dom'
 import axios from "axios";
+import { UserContext } from '../context/usercontext';
 
 
 function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const {setUser} = useContext(UserContext)
+    const navigate = useNavigate()
 
 
     const handleLoginSubmit = async (ev) => {
         ev.preventDefault()
-       const data =  await axios.post('http://localhost:8000/api/login',{
-        email,
-        password
-       })
+        try {
+          
+          const {data} =  await axios.post('/api/login',{
+           email,
+           password
+          })
+          setUser(data)
+          
 
+          navigate('/api/account')
+
+
+        } catch (error) {
+          console.log(error)
+          alert('login failed')
+          
+        }   
 
         
         
     }
-    console.log(email,password);
 
 
   return (
@@ -39,7 +53,7 @@ function Login() {
                onChange={ev => setPassword(ev.target.value)} />
         <button className="bg-red-600 text-white py-2 rounded">Login</button>
         <div className="text-center py-2 text-gray-500">
-          Don't have an account yet? <Link className="underline text-black" to={'/register'}>Register now</Link>
+          Don't have an account yet? <Link className="underline text-black" to={'/api/register'}>Register now</Link>
         </div>
       </form>
     </div>
