@@ -22,15 +22,15 @@ const registerUser = async (req,res) =>{
 }
 const loginUser = async (req,res) =>{
     const user = await userModel.find({
-        email:req.body.email,
-    })
+        email:req.body.email,})
     if(user){
         const password = user[0].password
         const isPasswordRight = bcryptjs.compareSync(req.body.password,password )
         if(isPasswordRight){
             jwt.sign({
-                email:user.email,
-        id:user._id
+                email:user[0].email,
+        id:user[0]._id,
+        username:user[0].username
             },jwtSecret,{},(err,token)=>{
                 if(err) throw err;
                 res.cookie('token', token).json(user)
@@ -51,8 +51,9 @@ const getProfile =  (req,res) => {
     if (token) {
       jwt.verify(token, jwtSecret, {}, async (err, userData) => {
         if (err) throw err;
-        const {name,email,_id} = await User.findById(userData.id);
-        res.json({name,email,_id});
+        console.log('userdata',userData)
+        const {username,email,_id} = await userModel.findById(userData.id);
+        res.json({username,email,_id});
       });
     } else {
       res.json(null);
@@ -62,7 +63,16 @@ const getProfile =  (req,res) => {
   const logout = (req,res) => {
     res.cookie('token', '').json(true);
   };
+
+  function getUserDataFromReq(req) {
+    return new Promise((resolve, reject) => {
+      jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
+        if (err) throw err;
+        resolve(userData);
+      });
+    });
+  }
   
 
 
-module.exports = { registerUser, loginUser,getProfile,logout }
+module.exports = { registerUser, loginUser,getProfile,logout,getUserDataFromReq }

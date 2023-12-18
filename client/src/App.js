@@ -1,44 +1,42 @@
-import {BrowserRouter,Route,Routes} from 'react-router-dom';
-import Home from './pages/home';
-import './style/main.css';
-import Login from './pages/login';
-import Register from './pages/register';
-import { UserContext , UserContextProvider } from "./context/usercontext";
-import Account from './components/accountNav';
-import PlacesPage from './pages/placesPage';
-import AddPlacesForm from './pages/addPlacesForm';
-import axios from 'axios'
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Layout from "./pages/Layout";
+import "./style/main.css";
+import Login from "./pages/login";
+import Register from "./pages/register";
+import { UserContext, UserContextProvider } from "./context/usercontext";
+import Account from "./components/accountNav";
+import PlacesPage from "./pages/placesPage";
+import AddPlacesForm from "./pages/addPlacesForm";
+import axios from "axios";
+import IndexPage from "./pages/indexPage";
+import PlacePage from "./pages/PlacePage";
+import BookingsPage from "./pages/BookingsPage";
+import LandingPage from "./pages/LandingPage";
 
+axios.defaults.baseURL = "http://localhost:4000";
+axios.defaults.withCredentials = true;
 
 function App() {
   return (
     <UserContextProvider value>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<IndexPage />} />
 
-    <BrowserRouter>
-    <Routes>
-      <Route path = "/" element ={<Home/>} >
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-      <Route path = "/api/login" element ={<Login />} />
-      <Route path = "/api/register" element ={<Register />} />
-      <Route path = "/api/account/" element ={<Account />} />
-      <Route path = "/api/account/places" element ={<PlacesPage />} />
-      <Route path = "/api/account/places/new" element ={<AddPlacesForm />} />
+            <Route path="/account/" element={<Account />} />
+            <Route path="/account/bookings" element={<BookingsPage />} />
 
-     
-
-
-
-
-      </Route>
-
-
-    </Routes>
-    </BrowserRouter>
+            <Route path="/account/places" element={<PlacesPage />} />
+            <Route path="/account/places/new" element={<AddPlacesForm />} />
+            <Route path="/place/:id" element={<PlacePage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </UserContextProvider>
-
-    
-  
   );
 }
 

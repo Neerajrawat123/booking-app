@@ -1,4 +1,28 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const User = require('./userModel.js')
+
+
+const reviewSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+         ref:User
+     },
+     stars :{
+        type:Number,
+        required:true
+     },
+     msg:{
+         type:String,
+         required: true
+     },
+     
+    
+
+},{
+    timestamps:true
+})
+
+
 const placeSchema = new mongoose.Schema({
     owner:{
         type:mongoose.Schema.Types.ObjectId,
@@ -28,22 +52,43 @@ const placeSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    maxGuest:{
+    maxGuests:{
         type:Number,
         required:true
     },
-    price:{
+    bedrooms:{
         type:Number,
         required:true
     },
+    beds:{
+        type:Number,
+        required:true
+    },
+    bathrooms:{
+        type:Number,
+        required:true
+    },
+    
+        price:{
+        type:Number,
+        required:true
+    },
+    reveiws : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Review'
+    }
     
 
 
 
 
 
+},{ 
+    timestamps:true
 })
 
-const PlaceModel = mongoose.model('PlaceModel', placeSchema)
+const Place = mongoose.model('PlaceModels', placeSchema)
+const Review = mongoose.model('Review', reviewSchema)
 
-module.exports = PlaceModel
+
+module.exports = {Place, Review}

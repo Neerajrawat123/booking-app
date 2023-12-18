@@ -1,16 +1,13 @@
 import { Outlet } from "react-router-dom";
 import Header from "../components/header";
 
-function Home() {
+function Layout() {
   return (
-    <div className="py-4 px-8 flex flex-col min-h-screen max-w-4xl mx-auto">
+    <div className=" flex fsds flex-col min-h-screen  mx-auto ">
       <Header />
       <Outlet />
-
     </div>
-   
-  
   );
 }
 
-export default Home;
+export default Layout;

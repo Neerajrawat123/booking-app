@@ -13,7 +13,7 @@ function Register() {
 
     const handleRegisterSubmit = async (ev) => {
         ev.preventDefault()
-        const data =  await axios.post('/api/register',{
+        const data =  await axios.post('/register',{
             username,
             email,
             password
@@ -30,8 +30,8 @@ function Register() {
 
 
   return (
-    <div className="mt-4 grow flex items-center justify-around">
-    <div className="mb-64 w-full">
+    <div className=" grow flex items-center justify-around mt-20">
+    <div className="mb-64 w-full py-6">
       <h1 className="text-4xl text-center mb-4">Register</h1>
       <form className="max-w-md mx-auto flex  flex-col justify-between" onSubmit={handleRegisterSubmit}> 
       <input type="text"
@@ -53,7 +53,7 @@ function Register() {
                 
         <button className="bg-red-600 text-white py-2 rounded">Register</button>
         <div className="text-center py-2 text-gray-500">
-          Do have an account yet? <Link className="underline text-black" to={'/api/login'}>Login</Link>
+          Do have an account yet? <Link className="underline text-black" to={'/login'}>Login</Link>
         </div>
       </form>
     </div>
