@@ -1,63 +1,40 @@
 const { Place } = require("../model/placesModel.js");
 const imageDownloader = require("image-downloader");
-const fs = require("fs");
-const cloudinary = require('cloudinary').v2
 const jwt = require("jsonwebtoken");
+const uploadCloudinary = require("../utils/cloudinary.js");
+const User = require("../model/userModel.js");
 const jwtSecret = "skdjfaksdjfkd223jdkf3jj";
 
-cloudinary.config({ 
-    cloud_name: 'duqznmwqf', 
-    api_key: '595911866396944', 
-    api_secret: 'QWm3x3mxsTIC879Z9h317_otUVY',
-    secure: true 
-  });
-
-const uploadCloudinary = async (imageUrl) => {
-    const options = {
-        use_filename: true,
-        unique_filename: false,
-        overwrite: true,
-      };
-
-      try {
-        const result =await  cloudinary.uploader.upload(imageUrl,options)
-        return result?.url
-      } catch (error) {
-        console.log(error)
-        
-      }
-};
-
 const addPhotosByLink = async (req, res) => {
-  const { link } = req.body;
-  const newName = "phote" + Date.now() + ".jpg";
   try {
+    const { link } = req.body; 
+    const newName = "phote" + Date.now() + ".jpg";    // rename image 
     await imageDownloader.image({
       url: link,
       dest: __dirname + "/uploads/" + newName,
-    });
-    const imgUrl = await uploadCloudinary( __dirname + "/uploads/" + newName )
-    res.status(200).json({url:imgUrl})
+    });                                              // download images here
 
+    const data = await uploadCloudinary(__dirname + "/uploads/" + newName);  
+    res.status(200).json(data);
   } catch (error) {
     console.log("error", error);
   }
 };
 
 const uploadPhoto = async (req, res) => {
-  const uploadFiles = [];
-  for (let i = 0; i < req.files.length; i++) {
-    const { path, originalname } = req.files[i];
-    const parts = originalname.split(".");
-    const ext = parts[parts.length - 1];
-    let newPath = path + "." + ext;
-    fs.renameSync(path, newPath);
-    newPath = newPath.replace("controller\\uploads\\", "");
-    const imgUrl= uploadCloudinary(newPath)
-    uploadFiles.push(newPath);
-  }
+  try {
+    const uploadFiles = [];
+    for (let i = 0; i < req.files.length; i++) {
+      const { path } = req.files[i];
+      const imgUrl = await uploadCloudinary(path);
+      uploadFiles.push(imgUrl.secure_url);
+    }
 
-  res.status(201).json(uploadFiles);
+    res.status(201).json(uploadFiles);
+  } catch (error) {
+    res.status(400).json({ error });
+    console.log(error);
+  }
 };
 const addPlaces = async (req, res) => {
   const { token } = req.cookies;
@@ -100,13 +77,22 @@ const addPlaces = async (req, res) => {
 };
 
 const getPlaces = async (req, res) => {
-  res.json(await Place.find());
+  try {
+    res.status(200).json(await Place.find());
+  } catch (error) {
+    res.status(404).json(error);
+  }
 };
 
 const getPlace = async (req, res) => {
-  const { id } = req.params;
-
-  res.json(await Place.findById(id));
+  try {
+    const { id } = req.params;
+    const place = await Place.findById(id)
+    const owner = await User.findById(place.owner)
+    res.status(200).json({place,owner});
+  } catch (error) {
+    res.status(400).json({ error });
+  }
 };
 
 module.exports = {
@@ -114,5 +100,5 @@ module.exports = {
   uploadPhoto,
   addPlaces,
   getPlaces,
-  getPlace,
+  getPlace
 };

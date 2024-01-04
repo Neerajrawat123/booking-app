@@ -5,7 +5,7 @@ const User = require('./userModel.js')
 const reviewSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
-         ref:User
+         ref:'User'
      },
      stars :{
         type:Number,
